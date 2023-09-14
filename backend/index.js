@@ -4,14 +4,13 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const cors = require('cors');
 
-
 // Kết nối đến cơ sở dữ liệu MySQL
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'khoa',
     database: 'todos',
-});
+}).promise();
 
 // Middleware để xử lý JSON
 app.use(bodyParser.json());
@@ -20,61 +19,50 @@ app.use(cors());
 
 // Route POST để tạo công việc mới
 // Route GET để lấy danh sách tất cả công việc
-app.get('/todo', (req, res) => {
-    const query = 'SELECT * FROM todos';
-    db.query(query, (err, result) => {
-        if (err) {
-            console.error(err);
-            res.status(500).json({ error: 'Error fetching todos' });
-        } else {
-            res.status(200).json(result);
-        }
-    });
+app.get('/todo', async (req, res) => {
+    try {
+        const [rows] = await db.execute('SELECT * FROM todos');
+        res.status(200).json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error fetching todos' });
+    }
 });
 
-app.post('/todo', (req, res) => {
+app.post('/todo', async (req, res) => {
     const { name, status } = req.body;
-    const query = 'INSERT INTO todos (name, status) VALUES (?, ?)';
-    db.query(query, [name, status], (err, result) => {
-        if (err) {
-            console.error(err);
-            res.status(500).json({ error: 'Error creating todo' });
-        } else {
-            res.status(201).json({ message: 'Todo created successfully' });
-        }
-    });
+    try {
+        const [result] = await db.execute('INSERT INTO todos (name, status) VALUES (?, ?)', [name, status]);
+        res.status(201).json({ message: 'Todo created successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error creating todo' });
+    }
 });
 
 // Route PUT để cập nhật công việc thành completed
-app.put('/todo/:id', (req, res) => {
+app.put('/todo/:id', async (req, res) => {
     const { id } = req.params;
-    const query = 'UPDATE todos SET status = "1" WHERE id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            console.error(err);
-            res.status(500).json({ error: 'Error updating todo' });
-        } else {
-            res.status(200).json({ message: 'Todo updated successfully' });
-        }
-    });
+    try {
+        const [result] = await db.execute('UPDATE todos SET status = "1" WHERE id = ?', [id]);
+        res.status(200).json({ message: 'Todo updated successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error updating todo' });
+    }
 });
 
 // Route DELETE để xóa công việc
-app.delete('/todo/:id', (req, res) => {
+app.delete('/todo/:id', async (req, res) => {
     const { id } = req.params;
-    const query = 'DELETE FROM todos WHERE id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            console.error(err);
-            res.status(500).json({ error: 'Error deleting todo' });
-        } else {
-            res.status(200).json({ message: 'Todo deleted successfully' });
-        }
-    });
+    try {
+        const [result] = await db.execute('DELETE FROM todos WHERE id = ?', [id]);
+        res.status(200).json({ message: 'Todo deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error deleting todo' });
+    }
 });
-
-
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
