@@ -1,14 +1,14 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function TodoList() {
     const [tasks, setTasks] = useState([]); // Mảng chứa danh sách công việc
 
-    const getTasks = () => {
-        axios.get('http://localhost:3000/todo') // Điều này giả định rằng API endpoint GET danh sách công việc là "/todo"
+    const getTasks = async () => {
+        await axios.get('http://localhost:3000/todo') // Điều này giả định rằng API endpoint GET danh sách công việc là "/todo"
             .then((response) => {
                 setTasks(response.data);
+                console.log(response.data);
             })
             .catch((error) => {
                 console.error(error);
@@ -38,17 +38,22 @@ function TodoList() {
             });
     };
 
-    const handleDeleteTask = (taskId) => {
-        // Sử dụng Axios để gửi yêu cầu DELETE đến máy chủ để xóa công việc
-        axios.delete(`http://localhost:3000/todo/${taskId}`)
+    const handleToggleTask = (taskId, currentStatus) => {
+        // Tạo một đối tượng dữ liệu để gửi yêu cầu cập nhật
+        const updatedTaskData = {
+            status: currentStatus === 0 ? 1 : 0,
+        };
+
+        // Sử dụng Axios để gửi yêu cầu PUT (hoặc PATCH) để cập nhật công việc
+        axios.put(`http://localhost:3000/todo/${taskId}`, updatedTaskData)
             .then(() => {
-                // Xử lý xóa công việc thành công
-                getTasks(); // Cập nhật danh sách công việc sau khi xóa
-                console.log('Công việc đã được xóa thành công.');
+                // Xử lý cập nhật công việc thành công
+                getTasks(); // Cập nhật danh sách công việc sau khi cập nhật
+                console.log('Công việc đã được cập nhật thành công.');
             })
             .catch((error) => {
                 // Xử lý lỗi nếu có
-                console.error('Lỗi khi xóa công việc:', error);
+                console.error('Lỗi khi cập nhật công việc:', error);
             });
     };
 
@@ -78,22 +83,44 @@ function TodoList() {
                     <div className="col">
                         <h3>Uncompleted Tasks</h3>
                         <ul className="list-group">
-                            {tasks.map((task) => (
+                            {tasks.filter((task) => task.status == 0).map((task) => (
                                 <li className="list-group-item d-flex justify-content-between align-items-center" key={task.id}>
                                     {task.name}
                                     <div className="task-actions">
                                         <i
                                             className="bx bxs-trash mx-2"
-                                            onClick={() => handleDeleteTask(task.id)}
+                                            onClick={() => handleToggleTask(task.id, task.status)}
                                         ></i>
-                                        <input type='checkbox' />
+                                        <input
+                                            type='checkbox'
+                                            checked={task.status === 1}
+                                            onChange={() => handleToggleTask(task.id, task.status)}
+                                        />
                                     </div>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    <div className='col'>
-                        Completed Tasks
+                    <div className="col">
+                        <h3>Completed Tasks</h3>
+                        <ul className="list-group">
+                            {tasks.filter((task) => task.status == 1).map((task) => (
+                                <li className="list-group-item d-flex justify-content-between align-items-center" key={task.id}>
+                                    {task.name}
+                                    <div className="task-actions">
+                                        <i
+                                            className="bx bxs-trash mx-2"
+                                            onClick={() => handleToggleTask(task.id, task.status)}
+                                        ></i>
+                                        <input
+                                            type='checkbox'
+                                            checked={task.status === 1}
+                                            onChange={() => handleToggleTask(task.id, task.status)}
+                                        />
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
             </div>

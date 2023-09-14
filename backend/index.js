@@ -48,7 +48,7 @@ app.post('/todo', (req, res) => {
 // Route PUT để cập nhật công việc thành completed
 app.put('/todo/:id', (req, res) => {
     const { id } = req.params;
-    const query = 'UPDATE todos SET status = "complete" WHERE id = ?';
+    const query = 'UPDATE todos SET status = "1" WHERE id = ?';
     db.query(query, [id], (err, result) => {
         if (err) {
             console.error(err);
