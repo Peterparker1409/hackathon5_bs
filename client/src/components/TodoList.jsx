@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function TodoList() {
-    const [tasks, setTasks] = useState([]); // Mảng chứa danh sách công việc
+    const [tasks, setTasks] = useState([]); 
 
     const getTasks = async () => {
-        await axios.get('http://localhost:3000/todo') // Điều này giả định rằng API endpoint GET danh sách công việc là "/todo"
+        await axios.get('http://localhost:3000/todo') 
             .then((response) => {
                 setTasks(response.data);
                 console.log(response.data);
@@ -17,15 +17,14 @@ function TodoList() {
 
     useEffect(() => {
         getTasks();
-    }, []); // Sử dụng một lần sau khi component được mount
-
+    }, []); 
     const [userData, setUserData] = useState({
         name: '',
-        status: 0, // Mặc định là 0
+        status: 0, 
     });
 
     const handleAddTask = () => {
-        // Sử dụng Axios để gửi yêu cầu POST với dữ liệu công việc
+        
         axios.post('http://localhost:3000/todo', userData)
             .then((response) => {
                 // Xử lý phản hồi từ máy chủ (nếu cần)
@@ -41,12 +40,12 @@ function TodoList() {
         // Sử dụng Axios để gửi yêu cầu DELETE đến máy chủ để xóa công việc
         axios.delete(`http://localhost:3000/todo/${taskId}`)
             .then(() => {
-                // Xử lý xóa công việc thành công
-                getTasks(); // Cập nhật danh sách công việc sau khi xóa
+              
+                getTasks(); 
                 console.log('Công việc đã được xóa thành công.');
             })
             .catch((error) => {
-                // Xử lý lỗi nếu có
+               
                 console.error('Lỗi khi xóa công việc:', error);
             });
     };
@@ -58,11 +57,11 @@ function TodoList() {
             status: currentStatus === 0 ? 1 : 0,
         };
 
-        // Sử dụng Axios để gửi yêu cầu PUT (hoặc PATCH) để cập nhật công việc
+        
         axios.put(`http://localhost:3000/todo/${taskId}`, updatedTaskData)
             .then(() => {
-                // Xử lý cập nhật công việc thành công
-                getTasks(); // Cập nhật danh sách công việc sau khi cập nhật
+               
+                getTasks(); 
                 console.log('Công việc đã được cập nhật thành công.');
             })
             .catch((error) => {
