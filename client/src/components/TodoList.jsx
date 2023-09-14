@@ -27,17 +27,18 @@ function TodoList() {
         
         axios.post('http://localhost:3000/todo', userData)
             .then((response) => {
-                // Xử lý phản hồi từ máy chủ (nếu cần)
+                
                 getTasks();
+                setUserData({ ...userData, name: ''})
                 console.log('Công việc đã được thêm thành công:', response.data);
             })
             .catch((error) => {
-                // Xử lý lỗi nếu có
+                
                 console.error('Lỗi khi thêm công việc:', error);
             });
     };
     const handleDeleteTask = (taskId) => {
-        // Sử dụng Axios để gửi yêu cầu DELETE đến máy chủ để xóa công việc
+        
         axios.delete(`http://localhost:3000/todo/${taskId}`)
             .then(() => {
               
@@ -52,7 +53,7 @@ function TodoList() {
 
 
     const handleToggleTask = (taskId, currentStatus) => {
-        // Tạo một đối tượng dữ liệu để gửi yêu cầu cập nhật
+       
         const updatedTaskData = {
             status: currentStatus === 0 ? 1 : 0,
         };
