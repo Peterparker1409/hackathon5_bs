@@ -37,6 +37,20 @@ function TodoList() {
                 console.error('Lỗi khi thêm công việc:', error);
             });
     };
+    const handleDeleteTask = (taskId) => {
+        // Sử dụng Axios để gửi yêu cầu DELETE đến máy chủ để xóa công việc
+        axios.delete(`http://localhost:3000/todo/${taskId}`)
+            .then(() => {
+                // Xử lý xóa công việc thành công
+                getTasks(); // Cập nhật danh sách công việc sau khi xóa
+                console.log('Công việc đã được xóa thành công.');
+            })
+            .catch((error) => {
+                // Xử lý lỗi nếu có
+                console.error('Lỗi khi xóa công việc:', error);
+            });
+    };
+
 
     const handleToggleTask = (taskId, currentStatus) => {
         // Tạo một đối tượng dữ liệu để gửi yêu cầu cập nhật
@@ -89,7 +103,7 @@ function TodoList() {
                                     <div className="task-actions">
                                         <i
                                             className="bx bxs-trash mx-2"
-                                            onClick={() => handleToggleTask(task.id, task.status)}
+                                            onClick={() => handleDeleteTask(task.id)}
                                         ></i>
                                         <input
                                             type='checkbox'
@@ -110,7 +124,7 @@ function TodoList() {
                                     <div className="task-actions">
                                         <i
                                             className="bx bxs-trash mx-2"
-                                            onClick={() => handleToggleTask(task.id, task.status)}
+                                            onClick={() => handleDeleteTask(task.id)}
                                         ></i>
                                         <input
                                             type='checkbox'
